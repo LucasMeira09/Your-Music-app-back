@@ -69,7 +69,7 @@ async def download_music(music_name: Download):
         'ffmpeg_location': ffmpeg,
         'default_search': 'ytsearch1',
         'quiet': True,
-        'no_playslist': True,
+        'no_playlist': True,
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -77,7 +77,7 @@ async def download_music(music_name: Download):
 
     new__music = next(f for f in os.listdir(path) if f.startswith(personal_id))
 
-    base_url = "http://192.168.129.101:8000"
+    base_url = os.getenv("RENDER_EXTERNAL_URL", "http://localhost:8000")
     download_url = f"{base_url}/static/{new__music}"
 
     return {
