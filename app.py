@@ -1,0 +1,87 @@
+from fastapi import FastAPI, BackgroundTasks
+from fastapi.responses import FileResponse
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+import os
+import shutil
+import yt_dlp
+import uuid
+
+# uvicorn app:app --host 0.0.0.0 --port 8000 --reload
+
+app = FastAPI()
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+os.makedirs("downloads", exist_ok=True)
+
+class Download(BaseModel):
+    music_name: str
+
+def remove_files(file_path):
+    try:
+        if os.path.exists(file_path):
+            files_list = os.listdir(file_path)
+            for file in files_list:
+                file_to_remove = os.path.join(file_path, file)
+                if os.path.isfile(file_to_remove):
+                    os.remove(file_to_remove)
+    except Exception as e:
+        print(f"Error removing file: {e}")
+
+@app.get("/static/{file_name}")
+async def get_file(file_name: str):
+    file_path = os.path.join("downloads", file_name)
+
+    if os.path.exists(file_path):
+
+
+        return FileResponse(
+            path=file_path, 
+            media_type="audio/mpeg", 
+            filename=file_name,
+        )
+    else:
+        return {"error": "File not found"}
+
+@app.post("/download")
+async def download_music(music_name: Download):
+    remove_files("downloads")
+
+    personal_id = str(uuid.uuid4())[:8]
+
+    path = "downloads"
+    ffmpeg = "ffmpeg.exe" 
+
+    ydl_opts = {
+        'format': 'bestaudio/best',
+        'outtmpl': f'{path}/{personal_id}-%(title)s.%(ext)s',
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+        }],
+        'ffmpeg_location': ffmpeg,
+        'default_search': 'ytsearch1',
+        'quiet': True,
+        'no_playslist': True,
+    }
+
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([music_name.music_name])
+
+    new__music = next(f for f in os.listdir(path) if f.startswith(personal_id))
+
+    base_url = "http://192.168.129.101:8000"
+    download_url = f"{base_url}/static/{new__music}"
+
+    return {
+        "status": "success",
+        "download_url": download_url,
+        "filename": new__music
+    }
