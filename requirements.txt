@@ -1,5 +1,4 @@
 fastapi
 uvicorn
 pydantic
-yt_dlp
-yt-dlp-ytse
+spotdl
