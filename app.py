@@ -59,6 +59,11 @@ async def download_music(music_name: Download):
     path = "downloads"
     ffmpeg = "ffmpeg.exe" 
 
+    try:
+        cookie_path = os.getenv("COOKIES_PATH", "/etc/secrets/cookies.txt")
+    except Exception as e:
+        cookie_path = None
+        
     ydl_opts = {
         'format': 'bestaudio/best',
         'outtmpl': f'{path}/{personal_id}-%(title)s.%(ext)s',
@@ -81,6 +86,7 @@ async def download_music(music_name: Download):
         },
         'sleep_interval': 2,       # pause entre les requêtes
         'max_sleep_interval': 5,
+        'cookiefile': cookie_path,  # chemin vers le fichier de cookies
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
