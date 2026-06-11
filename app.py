@@ -69,7 +69,20 @@ async def download_music(music_name: Download):
         'ffmpeg_location': ffmpeg,
         'default_search': 'ytsearch1',
         'quiet': True,
-        'no_playslist': True,
+        'no_playlist': True,
+
+        'http_headers': {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept-Language': 'en-US,en;q=0.9',
+        },
+        'extractor_args': {
+            'youtube': {
+                'player_client': ['web'],  # force le client web
+            }
+        },
+        'sleep_interval': 2,       # pause entre les requêtes
+        'max_sleep_interval': 5,
+
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -77,7 +90,7 @@ async def download_music(music_name: Download):
 
     new__music = next(f for f in os.listdir(path) if f.startswith(personal_id))
 
-    base_url = "http://192.168.129.101:8000"
+    base_url = os.getenv("RENDER_EXTERNAL_URL", "http://localhost:8000")
     download_url = f"{base_url}/static/{new__music}"
 
     return {
