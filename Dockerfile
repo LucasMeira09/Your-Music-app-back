@@ -8,6 +8,8 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+RUN pip install --upgrade yt-dlp
+
 COPY . .
 
 # On lance Uvicorn en utilisant le port dynamique exigé par Render ($PORT)
