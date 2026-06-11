@@ -86,7 +86,7 @@ async def download_music(music_name: Download):
         },
         'extractor_args': {
             'youtube': {
-                'player_client': ['ios', 'android', 'web'],  # force le client web
+                'player_client': ['web_creator', 'web'],  # force le client web
             }
         },
         'sleep_interval': 2,       # pause entre les requêtes

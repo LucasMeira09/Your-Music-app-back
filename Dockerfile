@@ -1,7 +1,7 @@
 FROM python:3.10-slim
 
 # On installe FFmpeg sur le système Linux de Render
-RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y ffmpeg nodejs npm && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
