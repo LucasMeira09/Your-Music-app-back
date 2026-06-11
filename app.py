@@ -21,6 +21,12 @@ app.add_middleware(
 
 os.makedirs("downloads", exist_ok=True)
 
+COOKIES_SRC = "/etc/secrets/cookies.txt"
+COOKIES_DST = "/tmp/cookies.txt"
+
+if os.path.exists(COOKIES_SRC):
+    shutil.copy(COOKIES_SRC, COOKIES_DST)
+
 class Download(BaseModel):
     music_name: str
 
@@ -80,12 +86,12 @@ async def download_music(music_name: Download):
         },
         'extractor_args': {
             'youtube': {
-                'player_client': ['web'],  # force le client web
+                'player_client': ['ios', 'android', 'web'],  # force le client web
             }
         },
         'sleep_interval': 2,       # pause entre les requêtes
         'max_sleep_interval': 5,
-        'cookiefile': cookie_path,  # chemin vers le fichier de cookies
+        'cookiefile': COOKIES_DST,  # chemin vers le fichier de cookies
         'no_write_to_cookie_file': True,  # ne pas écrire dans le fichier de cookies
     }
 
